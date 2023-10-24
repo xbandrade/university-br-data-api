@@ -1,0 +1,1 @@
+Server=localhost;Port=3306;Database=BrUniversityAPI;User Id=mysql;Password=#P@ssw0rd;
