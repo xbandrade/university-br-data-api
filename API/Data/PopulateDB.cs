@@ -6,13 +6,12 @@ using Newtonsoft.Json.Linq;
 namespace UniversityBRDataAPI;
 public class DataPopulator
 {
-    private readonly string APIUrl;
+    private readonly string APIUrl = "http://universities.hipolabs.com/search?name=&country=brazil";
     private readonly string connectionString;
     private readonly UniversityDBContext _dbContext;
 
-    public DataPopulator(string apiUrl, string connectionString, UniversityDBContext dbContext)
+    public DataPopulator(string connectionString, UniversityDBContext dbContext)
     {
-        APIUrl = apiUrl;
         this.connectionString = connectionString;
         _dbContext = dbContext;
     }

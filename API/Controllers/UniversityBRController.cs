@@ -18,8 +18,37 @@ public class UniversityBRDataController : ControllerBase
     }
 
     [HttpGet(Name = "GetUniversityData")]
-    public IActionResult Get(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
     {
+        
+        var universitiesQuery = _dbContext.Universities;
+        bool dbHasData;
+        try
+        {
+            dbHasData = universitiesQuery.Any();
+        }
+        catch (MySqlConnector.MySqlException)
+        {
+            try
+            {
+                string relativePath = @".\Env\ConnectionString.txt";
+                string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
+                string connectionString = System.IO.File.ReadAllText(fullPath);
+                var dataPopulator = new DataPopulator(connectionString, _dbContext);
+                await dataPopulator.PopulateDatabase();
+                _logger.LogInformation("Database populated successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error updating data: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        var universities = _dbContext.Universities
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        string? baseUrl = Url.Action("GetUniversityData");
         int totalItems = _dbContext.Universities.Count();
         int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
         if (page < 1)
@@ -30,11 +59,6 @@ public class UniversityBRDataController : ControllerBase
         {
             page = totalPages;
         }
-        var universities = _dbContext.Universities
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-        string? baseUrl = Url.Action("GetUniversityData");
         var result = new
         {
             CurrentPage = page,
@@ -78,12 +102,10 @@ public class UniversityBRDataController : ControllerBase
     {
         try
         {
-            
-            string uniAPIUrl = "http://universities.hipolabs.com/search?name=&country=brazil";
             string relativePath = @".\Env\ConnectionString.txt";
             string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
             string connectionString = System.IO.File.ReadAllText(fullPath);
-            var dataPopulator = new DataPopulator(uniAPIUrl, connectionString, _dbContext);
+            var dataPopulator = new DataPopulator(connectionString, _dbContext);
             await dataPopulator.PopulateDatabase();
             return Ok(new { message = "Data updated successfully" });
         }
