@@ -22,11 +22,11 @@ public class DataPopulator
         try
         {
             Console.WriteLine("Updating DB");
-            string createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS BrUniversityAPI";
+            string createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS bruniapi";
             connection.Open();
             using MySqlCommand createDatabaseCommand = new(createDatabaseQuery, connection);
             createDatabaseCommand.ExecuteNonQuery();
-            string useDatabaseQuery = "USE BrUniversityAPI";
+            string useDatabaseQuery = "USE bruniapi";
             using MySqlCommand useDatabaseCommand = new(useDatabaseQuery, connection);
             useDatabaseCommand.ExecuteNonQuery();
 
@@ -103,5 +103,4 @@ public class DataPopulator
             Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
         }
     }
-
 }

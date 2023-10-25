@@ -31,9 +31,9 @@ public class UniversityBRDataController : ControllerBase
         {
             try
             {
-                string relativePath = @".\Env\ConnectionString.txt";
-                string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
-                string connectionString = System.IO.File.ReadAllText(fullPath);
+                string connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
+                // string connectionString = "server=db;port=3306;uid=bruniapi;pwd=P@ssw0rd;database=bruniapi";
+                // string connectionString = "server=localhost;user id=root;password=admin;port=3306;database=bruniapi;";
                 var dataPopulator = new DataPopulator(connectionString, _dbContext);
                 await dataPopulator.PopulateDatabase();
                 _logger.LogInformation("Database populated successfully");
@@ -124,9 +124,9 @@ public class UniversityBRDataController : ControllerBase
     {
         try
         {
-            string relativePath = @".\Env\ConnectionString.txt";
-            string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
-            string connectionString = System.IO.File.ReadAllText(fullPath);
+            string connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
+            // string connectionString = "server=localhost;user id=root;password=admin;port=3306;database=bruniapi;";
+            // string connectionString = "server=db;port=3306;uid=bruniapi;pwd=P@ssw0rd;database=bruniapi";
             var dataPopulator = new DataPopulator(connectionString, _dbContext);
             await dataPopulator.PopulateDatabase();
             return Ok(new { message = "Data updated successfully" });

@@ -14,9 +14,8 @@ public class UniversityDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        string relativePath = @".\Env\ConnectionString.txt";
-        string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
-        string connectionString = File.ReadAllText(fullPath);
+        string connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
+        // string connectionString = "server=db;port=3306;uid=bruniapi;pwd=P@ssw0rd;database=bruniapi";
         optionsBuilder.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), null);
     }
 
