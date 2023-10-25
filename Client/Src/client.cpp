@@ -21,9 +21,6 @@ Client::Client(QWidget *parent)
     ui.setupUi(this);
     resultsModel = new NonEditableStringListModel(this);
     detailsModel = new NonEditableStringListModel(this);
-    QStringList dataList;
-    dataList << "Item 1" << "Item 2" << "Item 3";
-    resultsModel->setStringList(dataList);
     ui.detailsView->setModel(detailsModel);
     ui.resultsView->setModel(resultsModel);
     ui.apiUrlLineEdit->setText("http://localhost:5000/uni-br/search");
@@ -48,9 +45,30 @@ Client::Client(QWidget *parent)
 void Client::onResultsItemClicked(const QModelIndex& index) {
     if (resultsModel && index.isValid()) {
         QVariant data = resultsModel->data(index, Qt::DisplayRole);
+        QString qstr = data.toString();
+        std::string str = qstr.toStdString();
         selectedItems.clear();
-        selectedItems << data.toString();
+        std::regex pattern("^(\\d+)");
+        std::smatch match;
+        std::map<std::string, std::string> dataMap;
+        if (std::regex_search(str, match, pattern)) {
+            std::string numberStr = match[1];
+            int pk = std::stoi(numberStr);
+            QString newStr = QString::fromStdString(std::to_string(pk));
+            QString apiUrl = QString::fromStdString(ui.apiUrlLineEdit->text().trimmed().toStdString());
+            if (!apiUrl.isEmpty()) {
+                dataMap = apiReader.getApiResponseByPK(apiUrl.toStdString(), pk);
+            }
+        }
+        else {
+            std::cout << "ID not found" << std::endl;
+        }
         if (detailsModel) {
+            for (auto const& p : dataMap) {
+                std::string output = p.first + ": " + p.second;
+                QString qstr = QString::fromStdString(output);
+                selectedItems << qstr;
+            }
             detailsModel->setStringList(selectedItems);
         }
     }
@@ -60,9 +78,16 @@ void Client::onPushButtonClicked() {
     QString apiUrl = QString::fromStdString(ui.apiUrlLineEdit->text().trimmed().toStdString());
     std::map<int, std::string> dataMap;
     if (!apiUrl.isEmpty()) {
-        dataMap = apiReader.getApiResponse(apiUrl.toStdString());
+        dataMap = apiReader.getApiResponseAll(apiUrl.toStdString());
     }
-    ui.textDisplay->setText(dataMap.empty() ? "Empty Response" : QString::fromStdString(std::to_string(dataMap.size())));
+    ui.textDisplay->setText(dataMap.empty() ? "Empty Response from API" : "Successfully connected to API");
+    QStringList dataList;
+    for (auto const& p : dataMap) {
+        std::string str = std::to_string(p.first) + " - " + p.second;
+        QString qstr = QString::fromStdString(str);
+        dataList << qstr;
+    }
+    resultsModel->setStringList(dataList);
 }
 
 void Client::onNextButtonClicked() {

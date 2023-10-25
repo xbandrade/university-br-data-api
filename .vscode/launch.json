@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "f:/Dev/CS/UniversityBRDataAPI/Client",
-      "program": "f:/Dev/CS/UniversityBRDataAPI/Client/build/Debug/outDebug",
+      "cwd": "f:/Dev/CS/UniversityBRDataAPI/Client/Src",
+      "program": "f:/Dev/CS/UniversityBRDataAPI/Client/Src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

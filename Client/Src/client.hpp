@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <map>
+#include <regex>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QListView>
 #include <QAbstractListModel>

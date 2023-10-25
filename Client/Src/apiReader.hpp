@@ -15,7 +15,8 @@ size_t writeCallback(void* contents, size_t size, size_t nmemb, void* userp);
 class ApiReader {
 public:
 	ApiReader();
-	std::map<int, std::string> getApiResponse(const std::string& apiUrl);
+	std::map<int, std::string> getApiResponseAll(const std::string& apiUrl);
+	std::map<std::string, std::string> getApiResponseByPK(const std::string& apiUrl, int pk);
 	int getTotalItems();
 	int getCurrentPage();
 	int getTotalPages();
