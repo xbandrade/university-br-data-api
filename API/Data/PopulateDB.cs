@@ -85,7 +85,7 @@ public class DataPopulator
                                                 "VALUES (@Name, @State, @WebPages, @Domains)";
                     using MySqlCommand command = new(insertUniversityQuery, connection);
                     command.Parameters.AddWithValue("@Name", university.Name);
-                    command.Parameters.AddWithValue("@State", university.State);
+                    command.Parameters.AddWithValue("@State", university.State ?? string.Empty);
                     command.Parameters.AddWithValue("@WebPages", concatenatedWebPages);
                     command.Parameters.AddWithValue("@Domains", concatenatedDomains);
                     command.ExecuteNonQuery();

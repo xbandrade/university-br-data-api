@@ -1,3 +1,6 @@
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Swagger;
+
 namespace UniversityBRDataAPI;
 public class Startup
 {
@@ -10,11 +13,16 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        Console.WriteLine("Configuring Services");
+        Console.WriteLine("Configuring Services"); 
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "BrUni API", Version = "v1" });
+            c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+            c.EnableAnnotations();
+        });
         services.AddDbContext<UniversityDBContext>();
         services.AddControllers();
-        services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddEndpointsApiExplorer();   
         services.AddAuthorization();
     }
 
@@ -23,12 +31,17 @@ public class Startup
         Console.WriteLine("Configuring Startup");
         if (env.IsDevelopment())
         {
-            app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "/swagger/{documentName}/swagger.json";
+            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "BrUni API v1"));
         }
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthorization();
+        app.UseDeveloperExceptionPage();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

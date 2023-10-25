@@ -14,7 +14,6 @@ public class UniversityDBContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        Console.WriteLine("-> MySQLContext.OnConfiguring");
         string relativePath = @".\Env\ConnectionString.txt";
         string fullPath = Path.Combine(Environment.CurrentDirectory, relativePath);
         string connectionString = File.ReadAllText(fullPath);
@@ -23,10 +22,8 @@ public class UniversityDBContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        Console.WriteLine("-> MySQLContext.OnModelCreating");
         modelBuilder.Entity<BrUniversity>().ToTable("University");
         modelBuilder.Entity<BrUniversity>().HasKey(u => u.Id);
         base.OnModelCreating(modelBuilder);
     }
-
 }

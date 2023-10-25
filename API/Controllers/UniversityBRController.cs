@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.IO;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace UniversityBRDataAPI.Controllers;
 
 [ApiController]
-[Route("unibr-data")]
+[Route("uni-br")]
 public class UniversityBRDataController : ControllerBase
 {
     private readonly UniversityDBContext _dbContext;
@@ -17,15 +16,16 @@ public class UniversityBRDataController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "GetUniversityData")]
+    [HttpGet("search", Name = "GetUniversityData")]
+    [SwaggerOperation(Summary = "Get data from all universities",
+        Description = "This endpoint retrieves data from every university in the database. " +
+                      "If the database is initially empty, it will try to populate it first.")]
     public async Task<IActionResult> Get(int page = 1, int pageSize = 10)
     {
-        
-        var universitiesQuery = _dbContext.Universities;
-        bool dbHasData;
         try
         {
-            dbHasData = universitiesQuery.Any();
+            var universitiesQuery = _dbContext.Universities;
+            var dbHasData = universitiesQuery.Any();
         }
         catch (MySqlConnector.MySqlException)
         {
@@ -44,9 +44,15 @@ public class UniversityBRDataController : ControllerBase
                 return StatusCode(500, "Internal server error");
             }
         }
-        var universities = _dbContext.Universities
+        var universities = _dbContext.Universities 
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
+            .Select(u => new
+            {
+                Id = u.Id,
+                Name = u.Name,
+                State = u.State
+            })
             .ToList();
         string? baseUrl = Url.Action("GetUniversityData");
         int totalItems = _dbContext.Universities.Count();
@@ -71,9 +77,20 @@ public class UniversityBRDataController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("{pk}", Name = "GetUniversityByPk")]
+    [HttpGet("search/{pk}", Name = "GetUniversityByPk")]
+    [SwaggerOperation(Summary = "Get data from a specific university",
+        Description = "This endpoint retrieves data from a specific university in the database.")]
     public IActionResult Get(int pk)
     {
+        try
+        {
+            var universitiesQuery = _dbContext.Universities;
+            var dbHasData = universitiesQuery.Any();
+        }
+        catch (MySqlConnector.MySqlException)
+        {
+            return NotFound();
+        }
         Console.WriteLine($"Retrieving university with PK {pk} from database");
         var university = _dbContext.Universities.FirstOrDefault(u => u.Id == pk);
         if (university == null)
@@ -84,7 +101,9 @@ public class UniversityBRDataController : ControllerBase
         return Ok(university);
     }
 
-    [HttpPost(Name = "CreateUniversityData")]
+    [HttpPost("create", Name = "CreateUniversityData")]
+    [SwaggerOperation(Summary = "Create a new entry for university data",
+        Description = "This endpoint creates a new entry for university data in the database.")]
     public IActionResult CreateUniversity([FromBody] BrUniversity university)
     {
         if (university == null)
@@ -97,7 +116,10 @@ public class UniversityBRDataController : ControllerBase
         return CreatedAtRoute("GetUniversityByPk", new { pk = university.Id }, university);
     }
 
-    [HttpPost("update-data", Name = "UpdateUniversityData")]
+    [HttpPost("update-db", Name = "UpdateUniversityData")]
+    [SwaggerOperation(Summary = "Update the university database",
+        Description = "This endpoint populates the university database if it is empty, " +
+                      "and updates it with new data from the base API if there are any new universities.")]
     public async Task<IActionResult> UpdateUniversityData()
     {
         try
