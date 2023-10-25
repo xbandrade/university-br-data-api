@@ -1,7 +1,6 @@
-using System;
-using System.Net.Http;
-using System.Threading.Tasks;
 using MySqlConnector;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace UniversityBRDataAPI;
@@ -16,7 +15,7 @@ public class DataPopulator
         this.connectionString = connectionString;
     }
 
-  public async Task PopulateDatabase()
+    public async Task PopulateDatabase()
     {
         using MySqlConnection connection = new(connectionString);
         try
@@ -31,13 +30,14 @@ public class DataPopulator
             useDatabaseCommand.ExecuteNonQuery();
 
             string createTableQuery = @"
-                CREATE TABLE IF NOT EXISTS UniversityData (
+                CREATE TABLE IF NOT EXISTS University (
                     Id INT AUTO_INCREMENT PRIMARY KEY,
                     Name VARCHAR(255) UNIQUE,
                     State VARCHAR(255),
-                    WebPages JSON,
-                    Domains JSON
-                )";
+                    WebPages VARCHAR(255),
+                    Domains VARCHAR(255)
+                );";
+
             using MySqlCommand createTableCommand = new(createTableQuery, connection);
             createTableCommand.ExecuteNonQuery();
 
@@ -46,32 +46,46 @@ public class DataPopulator
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                var parsedData = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BrUniversity>>(data);
-
-                if (parsedData != null && parsedData.Any())
+                var rawJsonData = JArray.Parse(data);
+                foreach (var item in rawJsonData)
                 {
-                    foreach (var item in parsedData)
+                    var university = new BrUniversity
                     {
-                        string webPagesJson = Newtonsoft.Json.JsonConvert.SerializeObject(item.WebPages);
-                        string domainsJson = Newtonsoft.Json.JsonConvert.SerializeObject(item.Domains);
-                        string insertQuery = "INSERT INTO UniversityData (Name, State, WebPages, Domains) " +
-                                            "VALUES (@Name, @State, @WebPages, @Domains)";
-                        using MySqlCommand command = new(insertQuery, connection);
-
-                        command.Parameters.AddWithValue("@Name", item.Name);
-                        command.Parameters.AddWithValue("@State", item.State);
-                        command.Parameters.AddWithValue("@WebPages", webPagesJson);
-                        command.Parameters.AddWithValue("@Domains", domainsJson);
-
-                        command.ExecuteNonQuery();
+                        Name = item["name"]?.ToString(),
+                        State = item["state-province"]?.ToString(),
+                    };
+                    List<string>? universityWebPages = new();
+                    List<string>? universityDomains = new();
+                    if (item["web_pages"] is JArray webPagesArray)
+                    {
+                        foreach (var webPage in webPagesArray)
+                        {
+                            universityWebPages.Add(webPage.ToString());
+                        }
                     }
-                    Console.WriteLine("Database populated successfully!");
+                    if (item["domains"] is JArray domainsArray)
+                    {
+                        foreach (var domain in domainsArray)
+                        {
+                            universityDomains.Add(domain.ToString());
+                        }
+                    }
+                    string concatenatedWebPages = universityWebPages != null ? string.Join(", ", universityWebPages) : "";
+                    string concatenatedDomains = universityDomains != null ? string.Join(", ", universityDomains) : "";
+
+                    string insertUniversityQuery = "INSERT INTO University (Name, State, WebPages, Domains) " +
+                                                "VALUES (@Name, @State, @WebPages, @Domains)";
+                    using MySqlCommand command = new(insertUniversityQuery, connection);
+                    command.Parameters.AddWithValue("@Name", university.Name);
+                    command.Parameters.AddWithValue("@State", university.State);
+                    command.Parameters.AddWithValue("@WebPages", concatenatedWebPages);
+                    command.Parameters.AddWithValue("@Domains", concatenatedDomains);
+                    command.ExecuteNonQuery();
                 }
-                else {
-                    Console.WriteLine("No valid data was retrieved from the API.");
-                }
+                Console.WriteLine("Database populated successfully!");
             }
-            else {
+            else
+            {
                 Console.WriteLine($"An error occurred while fetching data from the API: {response.StatusCode}");
                 Console.WriteLine($"Response content: {await response.Content.ReadAsStringAsync()}");
             }
@@ -81,4 +95,5 @@ public class DataPopulator
             Console.WriteLine($"An error occurred while populating the database: {ex.Message}");
         }
     }
+
 }

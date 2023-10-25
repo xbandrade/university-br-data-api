@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 
 namespace UniversityBRDataAPI;
@@ -14,7 +15,8 @@ public class BrUniversity
     public string? State { get; set; }
 
     [JsonProperty("web_pages")]
-    public ICollection<string> WebPages { get; set; } = new List<string>();
+    public string? WebPages { get; set; }
 
-    public ICollection<string> Domains { get; set; } = new List<string>();
+    [JsonProperty("domains")]
+    public string? Domains { get; set; }
 }
