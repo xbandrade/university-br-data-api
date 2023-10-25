@@ -57,6 +57,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Src\apiReader.cpp" />
+    <ClCompile Include="Src\apiReader.hpp" />
     <QtRcc Include="client.qrc" />
     <QtUic Include="client.ui" />
     <ClCompile Include="Src\client.cpp" />
