@@ -18,11 +18,33 @@ public class UniversityBRDataController : ControllerBase
     }
 
     [HttpGet(Name = "GetUniversityData")]
-    public IEnumerable<BrUniversity> Get()
+    public IActionResult Get(int page = 1, int pageSize = 10)
     {
-        Console.WriteLine("Retrieving universities from database");
-        var universities = _dbContext.Universities.ToList();
-        return universities;
+        int totalItems = _dbContext.Universities.Count();
+        int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+        if (page < 1)
+        {
+            page = 1;
+        }
+        else if (page > totalPages)
+        {
+            page = totalPages;
+        }
+        var universities = _dbContext.Universities
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+        string? baseUrl = Url.Action("GetUniversityData");
+        var result = new
+        {
+            CurrentPage = page,
+            TotalItems = totalItems,
+            TotalPages = totalPages,
+            PreviousPage = page > 1 ? $"{baseUrl}?page={page - 1}&pageSize={pageSize}" : null,
+            NextPage = page < totalPages ? $"{baseUrl}?page={page + 1}&pageSize={pageSize}" : null,
+            Data = universities,
+        };
+        return Ok(result);
     }
 
     [HttpGet("{pk}", Name = "GetUniversityByPk")]
