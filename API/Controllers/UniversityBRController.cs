@@ -28,12 +28,22 @@ public class UniversityBRDataController : ControllerBase
     {
         Console.WriteLine($"Retrieving university with PK {pk} from database");
         var university = _dbContext.Universities.FirstOrDefault(u => u.Id == pk);
-
         if (university == null)
         {
             return NotFound();
         }
-
         return Ok(university);
+    }
+
+    [HttpPost(Name = "CreateUniversityData")]
+    public IActionResult CreateUniversity([FromBody] BrUniversity university)
+    {
+        if (university == null)
+        {
+            return BadRequest();
+        }
+        _dbContext.Universities.Add(university);
+        _dbContext.SaveChanges();
+        return CreatedAtRoute("GetUniversityByPk", new { pk = university.Id }, university);
     }
 }
