@@ -8,11 +8,13 @@ public class DataPopulator
 {
     private readonly string APIUrl;
     private readonly string connectionString;
+    private readonly UniversityDBContext _dbContext;
 
-    public DataPopulator(string apiUrl, string connectionString)
+    public DataPopulator(string apiUrl, string connectionString, UniversityDBContext dbContext)
     {
-        this.APIUrl = apiUrl;
+        APIUrl = apiUrl;
         this.connectionString = connectionString;
+        _dbContext = dbContext;
     }
 
     public async Task PopulateDatabase()
@@ -20,7 +22,7 @@ public class DataPopulator
         using MySqlConnection connection = new(connectionString);
         try
         {
-            Console.WriteLine("Populating DB");
+            Console.WriteLine("Updating DB");
             string createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS BrUniversityAPI";
             connection.Open();
             using MySqlCommand createDatabaseCommand = new(createDatabaseQuery, connection);
@@ -49,11 +51,18 @@ public class DataPopulator
                 var rawJsonData = JArray.Parse(data);
                 foreach (var item in rawJsonData)
                 {
+                    string universityName = item["name"]?.ToString() ?? "";
+                    var universityExists = _dbContext.Universities.FirstOrDefault(u => u.Name == universityName);
+                    if (universityExists != null)
+                    {
+                        continue;
+                    }
                     var university = new BrUniversity
                     {
-                        Name = item["name"]?.ToString(),
+                        Name = universityName,
                         State = item["state-province"]?.ToString(),
                     };
+
                     List<string>? universityWebPages = new();
                     List<string>? universityDomains = new();
                     if (item["web_pages"] is JArray webPagesArray)
@@ -82,7 +91,7 @@ public class DataPopulator
                     command.Parameters.AddWithValue("@Domains", concatenatedDomains);
                     command.ExecuteNonQuery();
                 }
-                Console.WriteLine("Database populated successfully!");
+                Console.WriteLine("Database updated successfully!");
             }
             else
             {

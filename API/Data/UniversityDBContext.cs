@@ -25,15 +25,7 @@ public class UniversityDBContext : DbContext
     {
         Console.WriteLine("-> MySQLContext.OnModelCreating");
         modelBuilder.Entity<BrUniversity>().ToTable("University");
-
         modelBuilder.Entity<BrUniversity>().HasKey(u => u.Id);
-
-        // modelBuilder.Entity<BrUniversity>().Property(u => u.WebPagesConcatenated)
-        //     .HasColumnType("VARCHAR(255)");
-        // modelBuilder.Entity<BrUniversity>().Property(u => u.DomainsConcatenated)
-        //     .HasColumnType("VARCHAR(255)");
-
-
         base.OnModelCreating(modelBuilder);
     }
 
