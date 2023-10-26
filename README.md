@@ -1,5 +1,7 @@
 # BR University Data API
 
+🗒️🇧🇷 [README pt-BR](https://github.com/xbandrade/university-br-data-api/blob/main/README-pt-BR.md)
+
 ## ➡️ An ASP.NET API that allows you to retrieve data from Brazilian universities
 
 ## Youtube Video: [BR University API](https://www.youtube.com/watch?v=XWZ0S-GbTsw)
@@ -31,11 +33,21 @@
     - Open the `.sln` solution with Visual Studio
     - Build and compile the project, the output executable can be located in the Debug/ or Release/ folder
 
+## 📊 MySQL Database Structure
+#### The database table holds the following fields:
+    - `id` ─ INT, AUTO_INCREMENT, PRIMARY KEY
+    - `name` ─ VARCHAR(255), UNIQUE
+    - `state` ─ VARCHAR(255)
+    - `webPages` ─ VARCHAR(255)
+    - `domains` ─ VARCHAR(255)
+  ❕Multiple `webPages` and `domains` can be stored as `string` separated by comma
+
+
 ## 💻 API Features
   #### This API consumes data from the [University Domains and Names API](https://github.com/Hipo/university-domains-list-api), and exposes endpoints for Brazilian universities data retrieval.
   These are the available endpoints for the API:
   - `GET` ➔ `/uni-br/search` ─ Retrieve data from all universities in the database. If it is empty, it will try to populate the database with the base API.
-    - Parameters: `page` ─ Default: 1, `pageSize` - Default: 10
+    - Parameters: `page` ─ Default: 1, `pageSize` ─ Default: 10
   - `GET` ➔ `/uni-br/search/{pk}` ─ Retrieve data from a specific university.
   - `POST` ➔ `/uni-br/create` ─ Create a new entry for a university in the database.
     - Request Body: `name`: string, `state`: string, `webPages`: string, `domains`: string
