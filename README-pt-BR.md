@@ -6,7 +6,7 @@
 
 ## 💻 Tecnologias utilizadas:
   - ASP.NET 7.0
-  - MySQL
+  - MySQL 8.1.0
   - C++17
   - Qt 5
 
@@ -21,12 +21,12 @@
     - Tecnologias necessárias: .NET 7.0, MySQL
     - Navegue até a pasta API/ no diretório raiz do projeto
     - Execute o comando `dotnet run` para instalar as dependências e rodar a aplicação
-    - A aplicação usa uma base de dados MySQL hospedada em `db4free.net` por padrão
+    - A aplicação usa uma base de dados MySQL hospedada em `db4free.net` por padrão, portanto a conexão pode ser mais lenta inicialmente
       - Se necessário, configure seu ambiente MySQL e modifique a `connectionString` no arquivo de Controller
     
 ## ⚙️ Setup Client
 #### Com Visual Studio:
-    - Tecnologias necessárias: Microsoft C++, Qt
+    - Tecnologias necessárias: Microsoft C++, Qt5
     - Navegue até a pasta Client/ no diretório raiz do projeto
     - Abra a solução `.sln` com o Visual Studio
     - Compile o projeto, e o executável poderá ser localizado nas pastas Debug/ ou Release/
