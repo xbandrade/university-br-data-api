@@ -1,5 +1,4 @@
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace UniversityBRDataAPI;
 public class Startup
@@ -13,7 +12,6 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        Console.WriteLine("Configuring Services"); 
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "BrUni API", Version = "v1" });
@@ -28,7 +26,6 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        Console.WriteLine("Configuring Startup");
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

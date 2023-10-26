@@ -10,6 +10,7 @@ public class UniversityBRDataController : ControllerBase
     private readonly UniversityDBContext _dbContext;
     private readonly ILogger<UniversityBRDataController> _logger;
 
+    private readonly string _connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
     public UniversityBRDataController(UniversityDBContext dbContext, ILogger<UniversityBRDataController> logger)
     {
         _dbContext = dbContext;
@@ -31,10 +32,9 @@ public class UniversityBRDataController : ControllerBase
         {
             try
             {
-                string connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
                 // string connectionString = "server=db;port=3306;uid=bruniapi;pwd=P@ssw0rd;database=bruniapi";
                 // string connectionString = "server=localhost;user id=root;password=admin;port=3306;database=bruniapi;";
-                var dataPopulator = new DataPopulator(connectionString, _dbContext);
+                var dataPopulator = new DataPopulator(_connectionString, _dbContext);
                 await dataPopulator.PopulateDatabase();
                 _logger.LogInformation("Database populated successfully");
             }
@@ -91,7 +91,6 @@ public class UniversityBRDataController : ControllerBase
         {
             return NotFound();
         }
-        Console.WriteLine($"Retrieving university with PK {pk} from database");
         var university = _dbContext.Universities.FirstOrDefault(u => u.Id == pk);
         if (university == null)
         {
@@ -124,10 +123,9 @@ public class UniversityBRDataController : ControllerBase
     {
         try
         {
-            string connectionString = "Server=db4free.net;Port=3306;Database=bruniapi;User=bruniapi;Password=P@ssw0rd;";
             // string connectionString = "server=localhost;user id=root;password=admin;port=3306;database=bruniapi;";
             // string connectionString = "server=db;port=3306;uid=bruniapi;pwd=P@ssw0rd;database=bruniapi";
-            var dataPopulator = new DataPopulator(connectionString, _dbContext);
+            var dataPopulator = new DataPopulator(_connectionString, _dbContext);
             await dataPopulator.PopulateDatabase();
             return Ok(new { message = "Data updated successfully" });
         }

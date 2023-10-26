@@ -21,7 +21,6 @@ public class DataPopulator
         using MySqlConnection connection = new(connectionString);
         try
         {
-            Console.WriteLine("Updating DB");
             string createDatabaseQuery = "CREATE DATABASE IF NOT EXISTS bruniapi";
             connection.Open();
             using MySqlCommand createDatabaseCommand = new(createDatabaseQuery, connection);
@@ -90,7 +89,6 @@ public class DataPopulator
                     command.Parameters.AddWithValue("@Domains", concatenatedDomains);
                     command.ExecuteNonQuery();
                 }
-                Console.WriteLine("Database updated successfully!");
             }
             else
             {
