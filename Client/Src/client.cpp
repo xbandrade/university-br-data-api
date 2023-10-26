@@ -88,6 +88,9 @@ void Client::onPushButtonClicked() {
         dataList << qstr;
     }
     resultsModel->setStringList(dataList);
+    int currPage = apiReader.getCurrentPage();
+    QString qstr = QString::number(currPage);
+    ui.pageLabel->setText(qstr);
 }
 
 void Client::onNextButtonClicked() {
@@ -98,8 +101,28 @@ void Client::onNextButtonClicked() {
         currentValue = totalPages;
         return;
     }
-    QString newText = QString::number(currentValue + 1);
-    ui.pageLabel->setText(newText);
+    std::string apiUrl = ui.apiUrlLineEdit->text().trimmed().toStdString();
+    std::string fullUrl;
+    std::string nextPage = apiReader.getNextPage();
+    std::map<int, std::string> dataMap;
+    size_t pos = apiUrl.find("search");
+    if (pos != std::string::npos && !nextPage.empty()) {
+        std::string baseSearchUrl = apiUrl.substr(0, pos + 6);
+        fullUrl = baseSearchUrl + nextPage;
+        QString qstr = QString::fromStdString(fullUrl);
+        ui.apiUrlLineEdit->setText(qstr);
+        dataMap = apiReader.getApiResponseAll(fullUrl);   
+        QStringList dataList;
+        for (auto const& p : dataMap) {
+            std::string str = std::to_string(p.first) + " - " + p.second;
+            QString qstr = QString::fromStdString(str);
+            dataList << qstr;
+        }
+        resultsModel->setStringList(dataList);
+        QString newText = QString::number(currentValue + 1);
+        ui.pageLabel->setText(newText);
+    }
+    ui.textDisplay->setText(dataMap.empty() ? "Empty Response from API" : "Successfully connected to API");
 }
 
 void Client::onPreviousButtonClicked() {
@@ -109,9 +132,31 @@ void Client::onPreviousButtonClicked() {
         currentValue = 1;
         return;
     }
-    QString newText = QString::number(currentValue - 1);
-    ui.pageLabel->setText(newText);
+    std::string apiUrl = ui.apiUrlLineEdit->text().trimmed().toStdString();
+    std::string fullUrl;
+    std::string prevPage = apiReader.getPrevPage();
+    std::map<int, std::string> dataMap;
+    size_t pos = apiUrl.find("search");
+    if (pos != std::string::npos && !prevPage.empty()) {
+        std::string baseSearchUrl = apiUrl.substr(0, pos + 6);
+        fullUrl = baseSearchUrl + prevPage;
+        QString qstr = QString::fromStdString(fullUrl);
+        ui.apiUrlLineEdit->setText(qstr);
+        dataMap = apiReader.getApiResponseAll(fullUrl);
+        QStringList dataList;
+        for (auto const& p : dataMap) {
+            std::string str = std::to_string(p.first) + " - " + p.second;
+            QString qstr = QString::fromStdString(str);
+            dataList << qstr;
+        }
+        resultsModel->setStringList(dataList);
+        QString newText = QString::number(currentValue - 1);
+        ui.pageLabel->setText(newText);
+    }
+    ui.textDisplay->setText(dataMap.empty() ? "Empty Response from API" : "Successfully connected to API");
 }
 
 Client::~Client()
-{}
+{
+
+}

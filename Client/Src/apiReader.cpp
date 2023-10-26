@@ -27,6 +27,13 @@ int ApiReader::getTotalPages() {
     return totalPages;
 }
 
+std::string ApiReader::getNextPage() {
+    return nextPage;
+}
+std::string ApiReader::getPrevPage() {
+    return prevPage;
+}
+
 std::map<int, std::string> ApiReader::getApiResponseAll(const std::string& apiUrl) {
     std::map<int, std::string> dataMap;
     CURL* curl = curl_easy_init();

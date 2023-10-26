@@ -20,6 +20,8 @@ public:
 	int getTotalItems();
 	int getCurrentPage();
 	int getTotalPages();
+	std::string getNextPage();
+	std::string getPrevPage();
 
 private:
 	int totalItems;
