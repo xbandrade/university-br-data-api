@@ -2,7 +2,7 @@
 
 ## ➡️ Uma API ASP.NET API que permite a obtenção de dados de universidades brasileiras
 
-## ▶️ Video Youtube: [BR University API](https://www.youtube.com/watch?v=XWZ0S-GbTsw)
+## ▶️ Vídeo Youtube: [BR University API](https://www.youtube.com/watch?v=XWZ0S-GbTsw)
 
 ## 💻 Tecnologias utilizadas:
   - ASP.NET 7.0
